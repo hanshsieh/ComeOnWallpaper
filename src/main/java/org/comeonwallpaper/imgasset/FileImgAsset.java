@@ -14,6 +14,10 @@ public class FileImgAsset implements ImgAsset {
         this.deleteOnClose = deleteOnClose;
     }
 
+    public FileImgAsset(File file) {
+        this(file, false);
+    }
+
     @Override
     public File asFile() {
         return file;
