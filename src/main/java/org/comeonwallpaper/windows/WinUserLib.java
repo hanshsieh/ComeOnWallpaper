@@ -1,14 +1,14 @@
 package org.comeonwallpaper.windows;
 
 import com.sun.jna.Native;
-import com.sun.jna.win32.StdCallLibrary;
-import com.sun.jna.win32.W32APIFunctionMapper;
-import com.sun.jna.win32.W32APITypeMapper;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.win32.W32APIOptions;
 
-import java.util.HashMap;
-
-public interface WinUserLib extends StdCallLibrary
-{
+public interface WinUserLib extends User32 {
+    WinUserLib INSTANCE = Native.load(
+            "user32",
+            WinUserLib.class,
+            W32APIOptions.UNICODE_OPTIONS);
     // Sets the wallpaper
     // From https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-systemparametersinfow
     long SPI_SETDESKWALLPAPER = 0x0014;
