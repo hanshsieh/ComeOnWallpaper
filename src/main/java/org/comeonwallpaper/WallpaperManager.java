@@ -2,12 +2,10 @@ package org.comeonwallpaper;
 
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
-import org.comeonwallpaper.imgasset.FileImgAsset;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.comeonwallpaper.imgasset.ImgAsset;
 import org.comeonwallpaper.windows.WinUserLib;
-import org.comeonwallpaper.windows.WinUserLibLoader;
 
-import java.io.File;
 import java.io.IOException;
 
 public class WallpaperManager {
@@ -30,10 +28,10 @@ public class WallpaperManager {
     private final WinUserLib winUserLib;
 
     public WallpaperManager() {
-        this.winUserLib = WinUserLibLoader.loadInstance();
+        this.winUserLib = WinUserLib.INSTANCE;
     }
 
-    public void setWallpaper(ImgAsset image, DisplayStyle displayStyle) throws IOException {
+    public void setWallpaper(@NonNull ImgAsset image, @NonNull DisplayStyle displayStyle) throws IOException {
         String imagePath = image.asFile().getAbsolutePath();
         applyDisplayStyle(displayStyle);
         boolean success = winUserLib.SystemParametersInfo (
@@ -47,7 +45,7 @@ public class WallpaperManager {
         }
     }
 
-    private void applyDisplayStyle(DisplayStyle style) {
+    private void applyDisplayStyle(@NonNull DisplayStyle style) {
         Advapi32Util.registrySetStringValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\Desktop",
                 "WallpaperStyle",
                 style.style);
@@ -62,11 +60,5 @@ public class WallpaperManager {
         Advapi32Util.registrySetIntValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\Desktop",
                 "WallpaperOriginY",
                 0);
-    }
-
-    public static void main(String[] args) throws Exception {
-        WallpaperManager mgr = new WallpaperManager();
-        ImgAsset asset = new FileImgAsset(new File("F:\\Users\\someone\\Desktop\\2016-12-01-875132.jpg"), false);
-        mgr.setWallpaper(asset, DisplayStyle.CENTERED);
     }
 }
