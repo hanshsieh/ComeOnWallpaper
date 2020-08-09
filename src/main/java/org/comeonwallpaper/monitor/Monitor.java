@@ -3,6 +3,8 @@ package org.comeonwallpaper.monitor;
 import com.google.common.base.Preconditions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.awt.*;
+
 public class Monitor {
     static class Builder {
         private Rectangle displayArea;
@@ -30,17 +32,17 @@ public class Monitor {
     private final Rectangle displayArea;
     private final Rectangle workingArea;
     private Monitor(@NonNull Builder builder) {
-        this.displayArea = builder.displayArea;
-        this.workingArea = builder.workingArea;
+        this.displayArea = new Rectangle(builder.displayArea);
+        this.workingArea = new Rectangle(builder.workingArea);
     }
 
     @NonNull
     public Rectangle getDisplayArea() {
-        return displayArea;
+        return new Rectangle(displayArea);
     }
 
     @NonNull
     public Rectangle getWorkingArea() {
-        return workingArea;
+        return new Rectangle(workingArea);
     }
 }

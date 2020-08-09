@@ -6,6 +6,7 @@ import com.sun.jna.platform.win32.WinUser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.comeonwallpaper.windows.WinUserLib;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
