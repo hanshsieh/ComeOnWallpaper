@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.comeonwallpaper.imgasset.ImgAsset;
 import org.comeonwallpaper.windows.WinUserLib;
 
+import java.io.File;
 import java.io.IOException;
 
 public class WallpaperManager {
@@ -31,8 +32,8 @@ public class WallpaperManager {
         this.winUserLib = WinUserLib.INSTANCE;
     }
 
-    public void setWallpaper(@NonNull ImgAsset image, @NonNull DisplayStyle displayStyle) throws IOException {
-        String imagePath = image.asFile().getAbsolutePath();
+    public void setWallpaper(@NonNull File image, @NonNull DisplayStyle displayStyle) throws IOException {
+        String imagePath = image.getAbsolutePath();
         applyDisplayStyle(displayStyle);
         boolean success = winUserLib.SystemParametersInfo (
                 WinUserLib.SPI_SETDESKWALLPAPER,
