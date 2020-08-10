@@ -70,6 +70,14 @@
       <artifactId>jna-platform</artifactId>
       <version>5.6.0</version>
     </dependency>
+
+    <!-- Image processing -->
+    <dependency>
+      <groupId>org.boofcv</groupId>
+      <artifactId>boofcv-core</artifactId>
+      <version>0.36.1</version>
+    </dependency>
+
   </dependencies>
 
   <build>

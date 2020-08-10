@@ -1,7 +1,10 @@
 package org.comeonwallpaper;
 
+import boofcv.abst.distort.FDistort;
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.Planar;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.comeonwallpaper.imgsource.DirImgSource;
 import org.comeonwallpaper.imgsource.ImgPrefs;
 import org.comeonwallpaper.imgsource.ImgSource;
 import org.comeonwallpaper.monitor.Monitor;
@@ -18,10 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Future;
 
 public class WallpaperRenderer implements Closeable {
     private final MonitorService monitorService;
@@ -29,7 +30,7 @@ public class WallpaperRenderer implements Closeable {
     private final ImgSource source;
     private List<Monitor> monitors;
     private Rectangle canvasArea;
-    private BufferedImage canvas;
+    private Planar<GrayU8> canvas;
     private final File outputFile = new File("output.jpg");
     public WallpaperRenderer(
             @NonNull ImgSource source,
@@ -46,10 +47,11 @@ public class WallpaperRenderer implements Closeable {
             return;
         }
         calCanvasSize();
-        canvas = new BufferedImage(
+        canvas = new Planar<>(
+            GrayU8.class,
             canvasArea.width,
             canvasArea.height,
-            BufferedImage.TYPE_INT_RGB
+            3
         );
         renderForMonitors();
         writeWallpaperFile();
@@ -62,10 +64,11 @@ public class WallpaperRenderer implements Closeable {
         jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
         jpegParams.setCompressionQuality(0.85f);
         final ImageWriter writer = getJpegImageWriter();
+        BufferedImage convertedImg = ConvertBufferedImage.convertTo(canvas, null, true);
         // TODO Use a folder appropriate for writing application data
         try (FileImageOutputStream outputStream = new FileImageOutputStream(outputFile)) {
             writer.setOutput(outputStream);
-            writer.write(null, new IIOImage(canvas, null, null), jpegParams);
+            writer.write(null, new IIOImage(convertedImg, null, null), jpegParams);
             outputStream.flush();
             writer.dispose();
         }
@@ -80,26 +83,16 @@ public class WallpaperRenderer implements Closeable {
     }
 
     private void renderForMonitors() throws IOException {
-        Graphics graphics = canvas.getGraphics();
         try {
-            List<Future<Image>> futures = new ArrayList<>();
             for (Monitor monitor : monitors) {
-                renderForMonitor(monitor, graphics, futures);
-            }
-            for (Future<Image> future : futures) {
-                future.get();
+                renderForMonitor(monitor);
             }
         } catch (Exception ex) {
             throw new IOException("Failed to render image", ex);
-        } finally {
-            graphics.dispose();
         }
     }
 
-    private void renderForMonitor(
-            Monitor monitor,
-            Graphics graphics,
-            List<Future<Image>> futures) throws IOException {
+    private void renderForMonitor(Monitor monitor) throws IOException {
         if (!source.hasNext()) {
             return;
         }
@@ -107,18 +100,15 @@ public class WallpaperRenderer implements Closeable {
         ImgPrefs prefs = new ImgPrefs();
         prefs.setWidth(workingArea.width);
         prefs.setHeight(workingArea.height);
-        Image image = source.next(prefs);
-        ImgObserverFuture future = new ImgObserverFuture();
-        boolean done = graphics.drawImage(
-                image,
-                workingArea.x - canvasArea.x,
-                workingArea.y -canvasArea.y,
-                workingArea.width,
-                workingArea.height,
-                future);
-        if (!done) {
-            futures.add(future);
-        }
+        Planar<GrayU8> image = source.next(prefs);
+        int targetLeft = workingArea.x - canvasArea.x;
+        int targetRight = targetLeft + workingArea.width;
+        int targetTop = workingArea.y - canvasArea.y;
+        int targetBottom = targetTop + workingArea.height;
+        Planar<GrayU8> region = canvas.subimage(targetLeft, targetTop, targetRight, targetBottom);
+        new FDistort(image, region)
+                .scaleExt()
+                .apply();
     }
 
     private void calCanvasSize() {
@@ -140,14 +130,5 @@ public class WallpaperRenderer implements Closeable {
     @Override
     public void close() {
         canvasArea = null;
-    }
-
-    public static void main(String[] args) throws Exception {
-        WallpaperRenderer renderer = new WallpaperRenderer(
-            new DirImgSource(new File("F:\\Users\\someone\\Desktop")),
-            new MonitorService(),
-            new WallpaperManager()
-        );
-        renderer.render();
     }
 }
