@@ -3,7 +3,6 @@ package org.comeonwallpaper;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.comeonwallpaper.imgasset.ImgAsset;
 import org.comeonwallpaper.windows.WinUserLib;
 
 import java.io.File;

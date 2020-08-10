@@ -1,13 +1,12 @@
 package org.comeonwallpaper.imgsource;
 
+import boofcv.io.image.UtilImageIO;
+import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.ImageType;
+import boofcv.struct.image.Planar;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.comeonwallpaper.imgasset.FileImgAsset;
-import org.comeonwallpaper.imgasset.ImgAsset;
 
 import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -41,12 +40,12 @@ public class DirImgSource implements ImgSource {
     }
 
     @Nonnull @Override
-    public Image next(@NonNull ImgPrefs prefs) throws NoSuchElementException, IOException {
+    public Planar<GrayU8> next(@NonNull ImgPrefs prefs) throws NoSuchElementException, IOException {
         tryNextPath();
         if (nextFile == null) {
             throw new NoSuchElementException("No images under directory " + dir.getAbsolutePath());
         }
-        BufferedImage image = ImageIO.read(nextFile);
+        Planar<GrayU8> image = UtilImageIO.loadImage(nextFile, true, ImageType.PL_U8);
         nextFile = null;
         return image;
     }
