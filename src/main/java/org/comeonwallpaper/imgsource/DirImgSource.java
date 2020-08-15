@@ -46,6 +46,7 @@ public class DirImgSource implements ImgSource {
             throw new NoSuchElementException("No images under directory " + dir.getAbsolutePath());
         }
         Planar<GrayU8> image = UtilImageIO.loadImage(nextFile, true, ImageType.PL_U8);
+        image.setNumberOfBands(ImgPrefs.NUM_BANDS);
         nextFile = null;
         return image;
     }
