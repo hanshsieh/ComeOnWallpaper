@@ -4,9 +4,9 @@ import org.comeonwallpaper.imgsource.BlurFillImgSource;
 import org.comeonwallpaper.imgsource.DirImgSource;
 import org.comeonwallpaper.imgsource.ImgSource;
 import org.comeonwallpaper.monitor.MonitorService;
+import org.comeonwallpaper.tray.TrayUI;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class App
@@ -19,6 +19,8 @@ public class App
         WallpaperRenderer renderer = new WallpaperRenderer(scaledImgSrc, monitorService, wallpaperManager);
         WallpaperScheduler scheduler = new WallpaperScheduler(renderer);
         scheduler.schedule(10, TimeUnit.SECONDS);
+        TrayUI trayUI = new TrayUI();
+        trayUI.show();
         Thread.sleep(Long.MAX_VALUE);
     }
 }
