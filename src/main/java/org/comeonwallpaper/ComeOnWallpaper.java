@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.IOException;
 
 public class ComeOnWallpaper {
     private static final Logger logger = LoggerFactory.getLogger(ComeOnWallpaper.class);

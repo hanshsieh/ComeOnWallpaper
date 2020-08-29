@@ -1,5 +1,7 @@
 package org.comeonwallpaper.ui.setting;
 
-public interface StateListener {
+import java.util.EventListener;
+
+public interface StateListener extends EventListener {
     void onChange(State oldState, State newState);
 }

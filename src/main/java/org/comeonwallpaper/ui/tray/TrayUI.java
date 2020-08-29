@@ -1,7 +1,7 @@
 package org.comeonwallpaper.ui.tray;
 
-import com.google.common.collect.Sets;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.comeonwallpaper.event.EventEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,12 +10,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Set;
 
 public class TrayUI {
     private static final Logger logger = LoggerFactory.getLogger(TrayUI.class);
     private TrayIcon trayIcon;
-    private final Set<OpenViewListener> openViewListeners = Sets.newIdentityHashSet();
+    private final EventEmitter<OpenViewListener> openViewEventEmitter = new EventEmitter<>();
     public void show() throws UnsupportedOperationException, IOException {
         if (trayIcon != null) {
             return;
@@ -31,21 +30,11 @@ public class TrayUI {
     }
 
     public void addOpenViewListener(@NonNull OpenViewListener listener) {
-        this.openViewListeners.add(listener);
+        openViewEventEmitter.addListener(listener);
     }
 
     public void removeOpenViewListener(@NonNull OpenViewListener listener) {
-        this.openViewListeners.remove(listener);
-    }
-
-    private void emitOpenViewListener(@NonNull ViewType viewType) {
-        for (OpenViewListener listener : openViewListeners) {
-            try {
-                listener.onOpen(viewType);
-            } catch (Exception ex) {
-                logger.error("Exception thrown when calling open view listener for {} view", viewType, ex);
-            }
-        }
+        openViewEventEmitter.removeListener(listener);
     }
 
     private TrayIcon buildTrayIcon(@NonNull Dimension iconSize) throws IOException {
@@ -64,7 +53,7 @@ public class TrayUI {
     }
 
     private void onSettingsAction(@NonNull ActionEvent event) {
-        emitOpenViewListener(ViewType.SETTINGS);
+        openViewEventEmitter.emit((listener) -> listener.onOpen(ViewType.SETTINGS));
     }
 
     private Image loadIconImage(@NonNull Dimension iconSize) throws IOException {
@@ -73,7 +62,7 @@ public class TrayUI {
         return iconImg.getScaledInstance(iconSize.width, iconSize.height, Image.SCALE_DEFAULT);
     }
 
-    public void dispose() throws UnsupportedOperationException, IOException {
+    public void dispose() throws UnsupportedOperationException {
         if (trayIcon == null) {
             return;
         }
