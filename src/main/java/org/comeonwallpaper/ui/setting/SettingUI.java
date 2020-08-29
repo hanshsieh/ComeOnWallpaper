@@ -1,7 +1,7 @@
 package org.comeonwallpaper.ui.setting;
 
-import com.google.common.collect.Sets;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.comeonwallpaper.event.EventEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,12 +9,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Set;
 
 public class SettingUI {
     private static final Logger logger = LoggerFactory.getLogger(SettingUI.class);
-    private final Set<StateListener> stateListeners = Sets.newIdentityHashSet();
-    private final Set<OnSaveListener> saveListeners = Sets.newIdentityHashSet();
+    private final EventEmitter<StateListener> stateEventEmitter = new EventEmitter<>();
+    private final EventEmitter<OnSaveListener> onSaveEventEmitter = new EventEmitter<>();
     private State state = State.INIT;
     private JFrame frame;
     public void show() {
@@ -41,24 +40,18 @@ public class SettingUI {
         State oldState = this.state;
         this.state = newState;
         logger.debug("Settings state changed from {} to {}", oldState, newState);
-        for (StateListener listener : stateListeners) {
-            try {
-                listener.onChange(oldState, newState);
-            } catch (Exception ex) {
-                logger.error("Exception thrown when calling status listener: ", ex);
-            }
-        }
+        stateEventEmitter.emit((listener) -> listener.onChange(oldState, newState));
     }
     public void addStatusChangeListener(@NonNull StateListener listener) {
-        this.stateListeners.add(listener);
+        stateEventEmitter.addListener(listener);
     }
     public void removeStatusChangeListener(@NonNull StateListener listener) {
-        this.stateListeners.remove(listener);
+        stateEventEmitter.removeListener(listener);
     }
     public void addOnSaveListener(@NonNull OnSaveListener listener) {
-        this.saveListeners.add(listener);
+        onSaveEventEmitter.addListener(listener);
     }
     public void removeOnSaveListener(@NonNull OnSaveListener listener) {
-        this.saveListeners.remove(listener);
+        onSaveEventEmitter.removeListener(listener);
     }
 }

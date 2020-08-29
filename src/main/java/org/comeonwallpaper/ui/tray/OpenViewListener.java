@@ -1,5 +1,7 @@
 package org.comeonwallpaper.ui.tray;
 
-public interface OpenViewListener {
+import java.util.EventListener;
+
+public interface OpenViewListener extends EventListener {
     void onOpen(ViewType viewType);
 }

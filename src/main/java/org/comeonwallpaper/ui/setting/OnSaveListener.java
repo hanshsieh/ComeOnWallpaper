@@ -1,5 +1,7 @@
 package org.comeonwallpaper.ui.setting;
 
-public interface OnSaveListener {
+import java.util.EventListener;
+
+public interface OnSaveListener extends EventListener {
     void onSaved();
 }
