@@ -19,93 +19,93 @@ import java.util.NoSuchElementException;
  */
 public class BlurFillImgSource implements ImgSource {
 
-    private final ImgSource delegate;
-    private final int radius;
-    private final int sigma;
+  private final ImgSource delegate;
+  private final int radius;
+  private final int sigma;
 
-    /**
-     * Constructs a new image source using the given delegate.
-     * Gaussian blur will be applied to the background with the given radius and sigma.
-     * If one of the radius or sigma is -1, then the other will be calculated using normal distribution.
-     *
-     * @param delegate Delegate.
-     * @param radius Radius of Gaussian blur.
-     * @param sigma Sigma of Gaussian blur.
-     */
-    public BlurFillImgSource(@NonNull ImgSource delegate, int radius, int sigma) {
-        this.delegate = delegate;
-        this.radius = radius;
-        this.sigma = sigma;
+  /**
+   * Constructs a new image source using the given delegate.
+   * Gaussian blur will be applied to the background with the given radius and sigma.
+   * If one of the radius or sigma is -1, then the other will be calculated using normal distribution.
+   *
+   * @param delegate Delegate.
+   * @param radius   Radius of Gaussian blur.
+   * @param sigma    Sigma of Gaussian blur.
+   */
+  public BlurFillImgSource(@NonNull ImgSource delegate, int radius, int sigma) {
+    this.delegate = delegate;
+    this.radius = radius;
+    this.sigma = sigma;
 
-    }
+  }
 
-    /**
-     * Constructs a new image source using the given delegate.
-     * The sigma of Gaussian blur will be decided from normal distribution.
-     *
-     * @see #BlurFillImgSource(ImgSource, int, int)
-     * @param delegate Delegate.
-     * @param radius Radius of Gaussian blur.
-     */
-    public BlurFillImgSource(@NonNull ImgSource delegate, int radius) {
-        this(delegate, radius, -1);
-    }
+  /**
+   * Constructs a new image source using the given delegate.
+   * The sigma of Gaussian blur will be decided from normal distribution.
+   *
+   * @param delegate Delegate.
+   * @param radius   Radius of Gaussian blur.
+   * @see #BlurFillImgSource(ImgSource, int, int)
+   */
+  public BlurFillImgSource(@NonNull ImgSource delegate, int radius) {
+    this(delegate, radius, -1);
+  }
 
-    @NonNull
-    @Override
-    public Planar<GrayU8> next(@NonNull ImgPrefs prefs) throws NoSuchElementException, IOException {
-        Planar<GrayU8> image = delegate.next(prefs);
-        Planar<GrayU8> canvas = new Planar<>(GrayU8.class, prefs.getWidth(), prefs.getHeight(), ImgPrefs.NUM_BANDS);
-        ScaledFillCalculator calculator = new ScaledFillCalculator(
-                image.getWidth(), image.getHeight(), canvas.getWidth(), canvas.getHeight());
-        Planar<GrayU8> firstBgOnCanvas = subImageByRectangle(canvas, calculator.get1stBackgroundOnCanvas());
-        Planar<GrayU8> secondBgOnCanvas = subImageByRectangle(canvas, calculator.get2ndBackgroundOnCanvas());
-        Planar<GrayU8> imgOnCanvas = subImageByRectangle(canvas, calculator.getImageOnCanvas());
-        Planar<GrayU8> firstBgOnImage = subImageByRectangle(image, calculator.get1stBackgroundOnImage());
-        Planar<GrayU8> secondBgOnImage = subImageByRectangle(image, calculator.get2ndBackgroundOnImage());
-        Planar<GrayU8> firstBgOnCanvasScaled = firstBgOnCanvas.createSameShape();
-        Planar<GrayU8> secondBgOnCanvasScaled = secondBgOnCanvas.createSameShape();
-        scaleTo(firstBgOnImage, firstBgOnCanvasScaled);
-        GBlurImageOps.gaussian(firstBgOnCanvasScaled, firstBgOnCanvas, this.sigma, this.radius, null);
-        scaleTo(secondBgOnImage, secondBgOnCanvasScaled);
-        GBlurImageOps.gaussian(secondBgOnCanvasScaled, secondBgOnCanvas, this.sigma, this.radius, null);
-        scaleTo(image, imgOnCanvas);
-        return canvas;
-    }
+  @NonNull
+  @Override
+  public Planar<GrayU8> next(@NonNull ImgPrefs prefs) throws NoSuchElementException, IOException {
+    Planar<GrayU8> image = delegate.next(prefs);
+    Planar<GrayU8> canvas = new Planar<>(GrayU8.class, prefs.getWidth(), prefs.getHeight(), ImgPrefs.NUM_BANDS);
+    ScaledFillCalculator calculator = new ScaledFillCalculator(
+        image.getWidth(), image.getHeight(), canvas.getWidth(), canvas.getHeight());
+    Planar<GrayU8> firstBgOnCanvas = subImageByRectangle(canvas, calculator.get1stBackgroundOnCanvas());
+    Planar<GrayU8> secondBgOnCanvas = subImageByRectangle(canvas, calculator.get2ndBackgroundOnCanvas());
+    Planar<GrayU8> imgOnCanvas = subImageByRectangle(canvas, calculator.getImageOnCanvas());
+    Planar<GrayU8> firstBgOnImage = subImageByRectangle(image, calculator.get1stBackgroundOnImage());
+    Planar<GrayU8> secondBgOnImage = subImageByRectangle(image, calculator.get2ndBackgroundOnImage());
+    Planar<GrayU8> firstBgOnCanvasScaled = firstBgOnCanvas.createSameShape();
+    Planar<GrayU8> secondBgOnCanvasScaled = secondBgOnCanvas.createSameShape();
+    scaleTo(firstBgOnImage, firstBgOnCanvasScaled);
+    GBlurImageOps.gaussian(firstBgOnCanvasScaled, firstBgOnCanvas, this.sigma, this.radius, null);
+    scaleTo(secondBgOnImage, secondBgOnCanvasScaled);
+    GBlurImageOps.gaussian(secondBgOnCanvasScaled, secondBgOnCanvas, this.sigma, this.radius, null);
+    scaleTo(image, imgOnCanvas);
+    return canvas;
+  }
 
-    /**
-     * Scale the "from" image to fill the "to" image.
-     *
-     * @param from The source of the image to be scaled.
-     * @param to The target canvas to put the resulting image.
-     */
-    private static void scaleTo(@NonNull Planar<GrayU8> from, @NonNull Planar<GrayU8> to) {
-        new FDistort(from, to)
-                .scaleExt()
-                .apply();
-    }
+  /**
+   * Scale the "from" image to fill the "to" image.
+   *
+   * @param from The source of the image to be scaled.
+   * @param to   The target canvas to put the resulting image.
+   */
+  private static void scaleTo(@NonNull Planar<GrayU8> from, @NonNull Planar<GrayU8> to) {
+    new FDistort(from, to)
+        .scaleExt()
+        .apply();
+  }
 
-    /**
-     * Create a sub-image from the region described by the given rectangle.
-     *
-     * @param image The image to take sub-image.
-     * @param rec Rectangle.
-     * @return The sub-image.
-     */
-    private static Planar<GrayU8> subImageByRectangle(@NonNull Planar<GrayU8> image, @NonNull Rectangle rec) {
-        return image.subimage(
-            rec.x, rec.y,
-            rec.x + rec.width, rec.y + rec.height
-        );
-    }
+  /**
+   * Create a sub-image from the region described by the given rectangle.
+   *
+   * @param image The image to take sub-image.
+   * @param rec   Rectangle.
+   * @return The sub-image.
+   */
+  private static Planar<GrayU8> subImageByRectangle(@NonNull Planar<GrayU8> image, @NonNull Rectangle rec) {
+    return image.subimage(
+        rec.x, rec.y,
+        rec.x + rec.width, rec.y + rec.height
+    );
+  }
 
-    @Override
-    public boolean hasNext() throws IOException {
-        return delegate.hasNext();
-    }
+  @Override
+  public boolean hasNext() throws IOException {
+    return delegate.hasNext();
+  }
 
-    @Override
-    public void close() throws IOException {
-        delegate.close();
-    }
+  @Override
+  public void close() throws IOException {
+    delegate.close();
+  }
 }

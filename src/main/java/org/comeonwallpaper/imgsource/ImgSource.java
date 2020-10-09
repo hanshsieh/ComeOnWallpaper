@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 public interface ImgSource extends Closeable {
-    @NonNull
-    Planar<GrayU8> next(@NonNull ImgPrefs prefs) throws NoSuchElementException, IOException;
-    boolean hasNext() throws IOException;
+  @NonNull
+  Planar<GrayU8> next(@NonNull ImgPrefs prefs) throws NoSuchElementException, IOException;
+
+  boolean hasNext() throws IOException;
 }
