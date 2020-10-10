@@ -65,7 +65,6 @@ public class WallpaperScheduler implements Closeable {
 
     @Override
     public void close() throws IOException {
-        renderer.close();
         executor.shutdownNow();
     }
 }
