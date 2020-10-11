@@ -14,13 +14,17 @@
           {
             "factoryClass": "org.comeonwallpaper.imgsource.factory.DirImgSourceFactory",
             "settings": {
-              "path": "D:\\my_dir"
+              "path": "D:\\my_dir",
+              "mode": "RANDOM",
+              "refreshIntervalMs": 60000
             }
           },
           {
             "factoryClass": "org.comeonwallpaper.imgsource.factory.DirImgSourceFactory",
             "settings": {
-              "path": "D:\\my_dir"
+              "path": "D:\\my_dir",
+              "mode": "RANDOM",
+              "refreshIntervalMs": 60000
             }
           }
         ]
