@@ -1,0 +1,33 @@
+{
+  "source": {
+    "factoryClass": "org.comeonwallpaper.imgsource.factory.BlurFillingImgSourceFactory",
+    "settings": {
+      "radius": 30
+    },
+    "dependencies": [
+      {
+        "factoryClass": "org.comeonwallpaper.imgsource.factory.RandomImgSourceFactory",
+        "settings": {
+          "weights": [1, 1]
+        },
+        "dependencies": [
+          {
+            "factoryClass": "org.comeonwallpaper.imgsource.factory.DirImgSourceFactory",
+            "settings": {
+              "path": "D:\\my_dir"
+            }
+          },
+          {
+            "factoryClass": "org.comeonwallpaper.imgsource.factory.DirImgSourceFactory",
+            "settings": {
+              "path": "D:\\my_dir"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "schedule": {
+    "intervalMs": 10000
+  }
+}

@@ -53,7 +53,9 @@ public class RandomImgSource implements ImgSource {
     if (nextSource == null) {
       throw new NoSuchElementException("Total weight is 0, so no source is available");
     }
-    return nextSource.next(prefs);
+    Planar<GrayU8> result = nextSource.next(prefs);
+    nextSource = null;
+    return result;
   }
 
   private void pickNextSource() {

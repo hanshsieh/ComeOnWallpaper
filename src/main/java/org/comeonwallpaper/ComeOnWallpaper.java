@@ -73,6 +73,7 @@ public class ComeOnWallpaper implements Closeable {
     });
     try {
       loadConfig();
+      logger.info("Config loaded");
     } catch (FileNotFoundException ex) {
       logger.info("Config file is not found, opening settings view: {}", ex.getMessage());
       showSettingUI();
