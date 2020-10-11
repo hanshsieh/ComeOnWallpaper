@@ -34,3 +34,6 @@ target/
 .project
 .settings
 .vscode
+
+config.json
+output.jpg

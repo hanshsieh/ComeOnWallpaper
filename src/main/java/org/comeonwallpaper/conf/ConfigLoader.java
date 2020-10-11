@@ -12,6 +12,6 @@ public class ConfigLoader {
 
   @NonNull
   public Config load() throws FileNotFoundException, IOException {
-    return new DataSource(new File("config.json")).asType(Config.class);
+    return DataSource.fromFile(new File("config.json")).asType(Config.class);
   }
 }

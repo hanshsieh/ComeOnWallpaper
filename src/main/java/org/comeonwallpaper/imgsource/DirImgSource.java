@@ -19,7 +19,7 @@ public class DirImgSource implements ImgSource {
   private Iterator<Path> pathStreamItr;
   private File nextFile = null;
 
-  public DirImgSource(File dir) throws IOException {
+  public DirImgSource(@NonNull File dir) throws IOException {
     this.dir = dir;
     openNewPathStream();
   }

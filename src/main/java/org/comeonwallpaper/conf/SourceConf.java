@@ -3,6 +3,7 @@ package org.comeonwallpaper.conf;
 import com.google.gson.JsonElement;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.List;
 
 public class SourceConf {
@@ -11,5 +12,5 @@ public class SourceConf {
   @NotNull
   public JsonElement settings;
   @NotNull
-  public List<SourceConf> dependencies;
+  public List<SourceConf> dependencies = Collections.emptyList();
 }

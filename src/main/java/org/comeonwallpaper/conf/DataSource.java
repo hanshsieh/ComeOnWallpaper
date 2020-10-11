@@ -16,17 +16,23 @@ import java.util.Set;
 public class DataSource {
   private static final Gson gson = new Gson();
   private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-  private @NonNull JsonElement jsonData;
+  private JsonElement jsonData;
 
-  public DataSource(@NonNull JsonElement jsonData) {
+  private DataSource(@NonNull JsonElement jsonData) {
     this.jsonData = jsonData;
   }
 
-  public DataSource(@NonNull File file) throws IOException {
+  @NonNull
+  public static DataSource fromJson(@NonNull JsonElement jsonData) {
+    return new DataSource(jsonData);
+  }
+
+  @NonNull
+  public static DataSource fromFile(@NonNull File file) throws IOException {
     try (FileInputStream inputFile = new FileInputStream(file)) {
       InputStreamReader reader = new InputStreamReader(
           new BufferedInputStream(inputFile), StandardCharsets.UTF_8);
-      this.jsonData = JsonParser.parseReader(reader);
+      return new DataSource(JsonParser.parseReader(reader));
     }
   }
 
@@ -39,7 +45,7 @@ public class DataSource {
     }
     Set<ConstraintViolation<T>> violations = validator.validate(data);
     if (!violations.isEmpty()) {
-      throw new ConstraintViolationException("Constraint violation when casting to type " + type, violations);
+      throw new ConstraintViolationException(violations);
     }
     return data;
   }

@@ -10,7 +10,6 @@ import org.comeonwallpaper.imgsource.ImgSource;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class ImgSourceFactory {
@@ -37,8 +36,8 @@ public abstract class ImgSourceFactory {
     // Ensure the class extends the factory class to prevent being cheated to instantiate a class that would cause
     // security vulnerability.
     Class<? extends ImgSourceFactory> factoryClass = uncastedFactoryClass.asSubclass(ImgSourceFactory.class);
-    Constructor<? extends ImgSourceFactory> constructor = factoryClass.getConstructor(JsonElement.class, List.class);
-    return constructor.newInstance(conf.settings, dependFactories);
+    Constructor<? extends ImgSourceFactory> constructor = factoryClass.getConstructor(DataSource.class, List.class);
+    return constructor.newInstance(DataSource.fromJson(conf.settings), dependFactories);
   }
 
   @NonNull
